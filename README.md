@@ -1,8 +1,9 @@
+![alt text][logo]
+
 # steppa
 
 Stepper motor test code for arduino with encoder input, neopixel indicator and limit switch
 
-![alt text][operation]
 
 ## Operation
 
@@ -15,6 +16,8 @@ The encoder position is automatically assumed to be centralised when you start t
 
 Turn the encoder to either side until either the display shows red or green lights. Return the encoder to central position to stop the motor (blue lights shown).
 If the limit switch is triggered, the mode is set back to "stopped" but the motor can be engaged again by moving the encoder.
+
+![alt text][operation]
 
 ### Caveats
 
@@ -56,7 +59,7 @@ The hardware is currently:
 
 The stepper motor shown gets hot when driven with the L298N driver at 12V because this is in excess of the rated voltage for the motor. For such cases where the supply voltage to the driver chip exceeds the rated voltage, it is suggested to use a DRV8825-based driver circuit which has an adjustable current limiter to handle this scenario (sometimes called fast-stepping mode).
 
-
+[logo]: ./img/boot-hat.png "boot and hat"
 [operation]: ./img/operation.gif "operating the stepper with the encoder as control"	 
 
 	 
