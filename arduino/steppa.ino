@@ -1,10 +1,22 @@
+// AccelStepper - Version: 1.61.0
+#include <AccelStepper.h>
+#include <MultiStepper.h>
+
 
 #include <Adafruit_NeoPixel.h>
 #include <Encoder.h>
 #include <Stepper.h>
  
 #define PIN      12
-#define N_LEDS 14
+#define N_LEDS 3
+
+#define dirPin 6
+#define stepPin 5
+#define stepSpeed 500
+#define motorInterfaceType 1
+
+// Create a new instance of the AccelStepper class:
+AccelStepper stepper = AccelStepper(motorInterfaceType, stepPin, dirPin);
 
 
 // Change these pin numbers to the pins connected to your encoder.
@@ -25,27 +37,20 @@ uint32_t green = strip.Color(0, 255, 0);
 uint32_t red = strip.Color(255, 0, 0);
 uint32_t blue = strip.Color(0,0,255);
 
-// Number of steps per output rotation
-const int stepsPerRevolution = 50;
 
-// Create Instance of Stepper library
-Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
 
 void setup() {
   strip.begin();
   Serial.begin(9600);
   // set the speed at 60 rpm:
-  myStepper.setSpeed(1000);
   pinMode(2, INPUT_PULLUP); 
   Serial.println("Stepper tester:");
+  stepper.setMaxSpeed(1000);
   
 }
  
 void loop() {
-  //chase(strip.Color(255, 0, 0)); // Red
-  //chase(strip.Color(0, 255, 0)); // Green
-  //chase(strip.Color(0, 0, 255)); // Blue
-  
+
   long newKnobPosition;
   newKnobPosition = knob.read();
   if (newKnobPosition > knobMax) {
@@ -66,17 +71,26 @@ void loop() {
 
   
    Serial.println(digitalRead(2));
-   if (digitalRead(2) == false) {
+
    if (knobPosition > 5) { 
-   myStepper.step(stepsPerRevolution); 
+     // Set the speed in steps per second:
+    stepper.setSpeed(stepSpeed);
+    // Step the motor with a constant speed as set by setSpeed():
+    stepper.runSpeed();
    }
    if (knobPosition < -5) { 
-   myStepper.step(-stepsPerRevolution); 
-   }
+        if (digitalRead(2) == false) {
+        // Set the speed in steps per second:
+      stepper.setSpeed(-stepSpeed);
+      // Step the motor with a constant speed as set by setSpeed():
+      stepper.runSpeed();
    } else {
          knobPosition = 0;
          knob.write(0);
+         stepper.stop();
     indicate(knobPosition);
+   }
+     
    }
   
 }
@@ -90,20 +104,13 @@ static void indicate(long value) {
   if (value < -5) {
     Serial.println("green");
     strip.setPixelColor(0, green);
-    strip.setPixelColor(1, green);
-    strip.setPixelColor(2, green);
-    
+
   } else if (value > 5) {
       Serial.println("red");
-      strip.setPixelColor(7, red);
-      strip.setPixelColor(8, red);
-      strip.setPixelColor(9, red);
+      strip.setPixelColor(2, red);
   } else {
       Serial.println("blue");
-      strip.setPixelColor(3, blue);
-      strip.setPixelColor(4, blue);
-      strip.setPixelColor(5, blue);
-      strip.setPixelColor(6, blue);
+      strip.setPixelColor(1, blue);
   }
   strip.show();
 }
@@ -115,4 +122,9 @@ static void chase(uint32_t c) {
       strip.show();
       delay(5);
   }
+}
+
+static void step(int count) {
+  
+  
 }
