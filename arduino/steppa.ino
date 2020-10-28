@@ -12,8 +12,9 @@
 
 #define dirPin 6
 #define stepPin 5
-#define stepSpeed 500
+#define stepSpeed 1000
 #define motorInterfaceType 1
+#define sleepPin 10
 
 // Create a new instance of the AccelStepper class:
 AccelStepper stepper = AccelStepper(motorInterfaceType, stepPin, dirPin);
@@ -45,7 +46,8 @@ void setup() {
   // set the speed at 60 rpm:
   pinMode(2, INPUT_PULLUP); 
   Serial.println("Stepper tester:");
-  stepper.setMaxSpeed(1000);
+  stepper.setMaxSpeed(10000);
+  pinMode(sleepPin, OUTPUT); 
   
 }
  
@@ -73,6 +75,7 @@ void loop() {
    Serial.println(digitalRead(2));
 
    if (knobPosition > 5) { 
+    digitalWrite(sleepPin, HIGH);
      // Set the speed in steps per second:
     stepper.setSpeed(stepSpeed);
     // Step the motor with a constant speed as set by setSpeed():
@@ -81,6 +84,7 @@ void loop() {
    if (knobPosition < -5) { 
         if (digitalRead(2) == false) {
         // Set the speed in steps per second:
+      digitalWrite(sleepPin, HIGH);
       stepper.setSpeed(-stepSpeed);
       // Step the motor with a constant speed as set by setSpeed():
       stepper.runSpeed();
@@ -88,6 +92,7 @@ void loop() {
          knobPosition = 0;
          knob.write(0);
          stepper.stop();
+         digitalWrite(sleepPin, LOW);
     indicate(knobPosition);
    }
      
